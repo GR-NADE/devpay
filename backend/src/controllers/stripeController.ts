@@ -35,6 +35,7 @@ export const createPaymentSession = async (
         if (invoice.status === 'DRAFT')
         {
             res.status(400).json({ error: 'Invoice is not yet sent' });
+            return;
         }
 
         const frontendUrl = process.env.FRONTEND_URL || 'https://localhost:5173';
@@ -83,7 +84,7 @@ export const handleWebhook = async (
             process.env.STRIPE_WEBHOOK_SECRET!,
         );
     }
-    catch (err)
+    catch (_err)
     {
         res.status(400).json({ error: `Webhook signature verification failed` });
         return;
@@ -111,7 +112,7 @@ export const handleWebhook = async (
             await resend.emails.send({
                 from: 'DevPay <onboarding@resend.dev>',
                 to: invoice.client.email,
-                subject: `Payment recieved - Invoice ${invoice.invoiceNumber}`,
+                subject: `Payment received - Invoice ${invoice.invoiceNumber}`,
                 html: `
                     <h2>Payment Received</h2>
                     <p>Hi ${invoice.client.name},</p>

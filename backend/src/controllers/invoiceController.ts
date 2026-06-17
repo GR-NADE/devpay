@@ -187,7 +187,7 @@ export const getPublicInvoice = async (req: Request, res: Response, next: NextFu
             return;
         }
 
-        const { userId, stripeSessionId, ...publicInvoice } = invoice;
+        const { userId: _userId, stripeSessionId: _stripeSessionId, ...publicInvoice } = invoice;
 
         res.json(publicInvoice);
     }
