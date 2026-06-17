@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String         @map("password_hash")
+  name          String
+  createdAt     DateTime       @default(now()) @map("created_at")
+
+  clients       Client[]
+  invoices      Invoice[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  tokenHash String   @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model Client {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  name           String
+  email          String
+  company        String?
+  billingAddress String?  @map("billing_address")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoices Invoice[]
+
+  @@map("clients")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  userId          String        @map("user_id")
+  clientId        String        @map("client_id")
+  invoiceNumber   String        @unique @map("invoice_number")
+  status          InvoiceStatus @default(DRAFT)
+  dueDate         DateTime      @map("due_date")
+  publicToken     String        @unique @default(cuid()) @map("public_token")
+  stripeSessionId String?       @map("stripe_session_id")
+  paidAt          DateTime?     @map("paid_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client    Client     @relation(fields: [clientId], references: [id])
+  lineItems LineItem[]
+
+  @@map("invoices")
+}
+
+model LineItem {
+  id          String  @id @default(cuid())
+  invoiceId   String  @map("invoice_id")
+  description String
+  quantity    Decimal
+  unitPrice   Decimal @map("unit_price")
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("line_items")
+}

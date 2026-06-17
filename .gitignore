@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.production
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+postgres-data/
+.env.test
