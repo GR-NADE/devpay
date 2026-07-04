@@ -62,7 +62,7 @@ export const listBanks = async (
 export const resolveAccountNumber = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    _next: NextFunction,
 ) : Promise<void> => {
     try
     {

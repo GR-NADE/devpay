@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createPaymentSession, handleWebhook } from '../controllers/paystackController';
+import { createPaymentSession } from '../controllers/paystackController';
 
 const router = Router();
 
