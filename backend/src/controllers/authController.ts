@@ -139,7 +139,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 export const verifyEmail = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
-        const { token } = req.params;
+        const token = String(req.params.token);
 
         const pending = await prisma.pendingVerification.findUnique({ where: { token } });
 
