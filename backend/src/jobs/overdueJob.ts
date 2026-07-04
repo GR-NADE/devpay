@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import { prisma } from '../prisma/client';
 
-export const markOverdueInvoices = async (): Promise<number> => {
+export const markOverdueInvoices = async () : Promise<number> => {
     const result = await prisma.invoice.updateMany({
         where: {
             status: 'SENT',

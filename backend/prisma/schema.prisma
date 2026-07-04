@@ -7,15 +7,21 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
-  passwordHash  String         @map("password_hash")
-  name          String
-  createdAt     DateTime       @default(now()) @map("created_at")
+  id                    String    @id @default(cuid())
+  email                 String    @unique
+  passwordHash          String    @map("password_hash")
+  name                  String
+  createdAt             DateTime  @default(now()) @map("created_at")
+  paystackSubaccountCode String?  @map("paystack_subaccount_code")
+  bankName              String?   @map("bank_name")
+  bankCode              String?   @map("bank_code")
+  accountNumber         String?   @map("account_number")
+  accountName           String?   @map("account_name")
 
-  clients       Client[]
-  invoices      Invoice[]
-  refreshTokens RefreshToken[]
+  clients             Client[]
+  invoices            Invoice[]
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -30,6 +36,31 @@ model RefreshToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
+}
+
+model PendingVerification {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String   @map("password_hash")
+  token        String   @unique
+  expiresAt    DateTime @map("expires_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("pending_verifications")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  tokenHash String   @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
 }
 
 model Client {
@@ -62,7 +93,7 @@ model Invoice {
   status          InvoiceStatus @default(DRAFT)
   dueDate         DateTime      @map("due_date")
   publicToken     String        @unique @default(cuid()) @map("public_token")
-  stripeSessionId String?       @map("stripe_session_id")
+  paystackReference String?       @map("paystack_reference")
   paidAt          DateTime?     @map("paid_at")
   createdAt       DateTime      @default(now()) @map("created_at")
 

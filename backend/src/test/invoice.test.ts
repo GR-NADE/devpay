@@ -57,6 +57,6 @@ describe('Invoices - access control', () => {
         expect(res.status).toBe(200);
         expect(res.body.invoiceNumber).toBe('INV-TEST-0001');
         expect(res.body).not.toHaveProperty('userId');
-        expect(res.body).not.toHaveProperty('stripeSessionId');
+        expect(res.body).not.toHaveProperty('paystackReference');
     });
 });

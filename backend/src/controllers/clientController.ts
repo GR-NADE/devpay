@@ -4,7 +4,7 @@ import { prisma } from '../prisma/client';
 const param = (value: string | string[]): string =>
   Array.isArray(value) ? value[0] : value;
 
-export const getClients = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getClients = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const clients = await prisma.client.findMany({
@@ -19,7 +19,7 @@ export const getClients = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-export const getClient = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getClient = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const client = await prisma.client.findFirst({
@@ -40,7 +40,7 @@ export const getClient = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
-export const createClient = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createClient = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const { name, email, company, billingAddress } = req.body;
@@ -69,7 +69,7 @@ export const createClient = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-export const updateClient = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateClient = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const { name, email, company, billingAddress } = req.body;
@@ -102,7 +102,7 @@ export const updateClient = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-export const deleteClient = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const deleteClient = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const existing = await prisma.client.findFirst({

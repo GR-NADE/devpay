@@ -2,11 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../prisma/client';
 import { generateInvoiceNumber, isValidStatusTransition } from '../services/invoiceService';
 import { InvoiceStatus } from '@prisma/client';
+import { sendInvoiceSentEmail } from '../services/emailService';
 
 const param = (value: string | string[]): string =>
     Array.isArray(value) ? value[0] : value;
 
-export const getInvoices = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getInvoices = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const invoices = await prisma.invoice.findMany({
@@ -22,7 +23,7 @@ export const getInvoices = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-export const getInvoice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getInvoice = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const invoice = await prisma.invoice.findFirst({
@@ -44,7 +45,7 @@ export const getInvoice = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-export const createInvoice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createInvoice = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const { clientId, dueDate, lineItems } = req.body;
@@ -66,7 +67,6 @@ export const createInvoice = async (req: Request, res: Response, next: NextFunct
         }
 
         const latest = await prisma.invoice.findFirst({
-            where: { userId: req.user!.userId },
             orderBy: { createdAt: 'desc' },
             select: { invoiceNumber: true },
         });
@@ -98,7 +98,7 @@ export const createInvoice = async (req: Request, res: Response, next: NextFunct
     }
 };
 
-export const updateInvoiceStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateInvoiceStatus = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const { status } = req.body;
@@ -109,8 +109,25 @@ export const updateInvoiceStatus = async (req: Request, res: Response, next: Nex
             return;
         }
 
+        if (status === 'SENT')
+        {
+            const user = await prisma.user.findUnique({
+                where: { id: req.user!.userId },
+                select: { paystackSubaccountCode: true },
+            });
+
+            if (!user?.paystackSubaccountCode)
+            {
+                res.status(400).json({
+                    error: 'You need to connect a bank account before sending invoices. Go to Settings to add your payment account.',
+                });
+                return;
+            }
+        }
+
         const existing = await prisma.invoice.findFirst({
             where: { id: param(req.params.id), userId: req.user!.userId },
+            include: { client: true, lineItems: true },
         });
 
         if (!existing)
@@ -136,6 +153,28 @@ export const updateInvoiceStatus = async (req: Request, res: Response, next: Nex
             include: { client: true, lineItems: true },
         });
 
+        if (status === 'SENT')
+        {
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+            const paymentUrl = `${frontendUrl}/pay/${invoice.publicToken}`;
+            const total = invoice.lineItems.reduce(
+                (sum, item) => sum + Number(item.quantity) * Number(item.unitPrice),
+                0,
+            );
+            const totalAmount = new Intl.NumberFormat('en-NG', {
+                style: 'currency',
+                currency: 'NGN',
+            }).format(total);
+
+            await sendInvoiceSentEmail(
+                invoice.client.email,
+                invoice.client.name,
+                invoice.invoiceNumber,
+                paymentUrl,
+                totalAmount,
+            );
+        }
+
         res.json(invoice);
     }
     catch (err)
@@ -144,7 +183,7 @@ export const updateInvoiceStatus = async (req: Request, res: Response, next: Nex
     }
 };
 
-export const deleteInvoice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const deleteInvoice = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const existing = await prisma.invoice.findFirst({
@@ -173,7 +212,7 @@ export const deleteInvoice = async (req: Request, res: Response, next: NextFunct
     }
 };
 
-export const getPublicInvoice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getPublicInvoice = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const invoice = await prisma.invoice.findFirst({
@@ -187,7 +226,7 @@ export const getPublicInvoice = async (req: Request, res: Response, next: NextFu
             return;
         }
 
-        const { userId: _userId, stripeSessionId: _stripeSessionId, ...publicInvoice } = invoice;
+        const { userId: _userId, paystackReference: _paystackReference, ...publicInvoice } = invoice;
 
         res.json(publicInvoice);
     }

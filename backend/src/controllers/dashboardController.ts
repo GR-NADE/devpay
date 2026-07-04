@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../prisma/client';
 import { calculateTotal } from '../services/invoiceService';
 
-export const getDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getDashboard = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try
     {
         const userId = req.user!.userId;

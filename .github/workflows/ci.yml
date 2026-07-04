@@ -68,8 +68,8 @@ jobs:
           JWT_SECRET: ci-test-secret
           JWT_REFRESH_SECRET: ci-test-refresh-secret
           RESEND_API_KEY: re_test_dummy
-          STRIPE_SECRET_KEY: sk_test_dummy
-          STRIPE_WEBHOOK_SECRET: whsec_test_secret_for_testing
+          PAYSTACK_SECRET_KEY: sk_test_dummy
+          PAYSTACK_PUBLIC_KEY: pk_test_dummy
           FRONTEND_URL: http://localhost:5173
           NODE_ENV: test
         run: npm run test
