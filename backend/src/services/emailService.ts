@@ -80,21 +80,20 @@ export const sendInvoiceSentEmail = async (
     await resend.emails.send({
         from: FROM,
         to: clientEmail,
-        subject: `Invoice ${invoiceNumber} — Payment due`,
+        subject: `${invoiceNumber} from DevPay`,
         html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #3A3A3A;">
-                <h2 style="color: #FF7A00;">Invoice ${invoiceNumber}</h2>
-                <p>Hi ${clientName},</p>
-                <p>You have received an invoice for <strong>${totalAmount}</strong>. Please click the button below to view and pay it:</p>
+                <h2 style="color: #FF7A00;">Hi ${clientName},</h2>
+                <p>${invoiceNumber} has been sent to you for <strong>${totalAmount}</strong>.</p>
+                <p>You can view and complete it here:</p>
                 <div style="text-align: center; margin: 30px 0;">
                     <a href="${paymentUrl}" style="background-color: #FF7A00; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
-                        View &amp; Pay Invoice
+                        View Invoice
                     </a>
                 </div>
-                <p>Or copy and paste this link into your browser:</p>
-                <p style="color: #505050; word-break: break-all;">${paymentUrl}</p>
+                <p style="color: #505050; font-size: 14px;">Or copy this link: ${paymentUrl}</p>
                 <hr style="margin: 30px 0; border: none; border-top: 1px solid #DAD8D9;">
-                <p style="color: #909090; font-size: 12px;">DevPay — Invoicing for freelancers</p>
+                <p style="color: #909090; font-size: 12px;">Sent via DevPay</p>
             </div>
         `,
     });
@@ -108,14 +107,14 @@ export const sendPaymentConfirmationEmail = async (
     await resend.emails.send({
         from: FROM,
         to: clientEmail,
-        subject: `Payment received — Invoice ${invoiceNumber}`,
+        subject: `Got it — ${invoiceNumber} is settled`,
         html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #3A3A3A;">
-                <h2 style="color: #22c55e;">Payment Received</h2>
-                <p>Hi ${clientName},</p>
-                <p>We've received your payment for invoice <strong>${invoiceNumber}</strong>. Thank you!</p>
+                <h2 style="color: #22c55e;">Hi ${clientName},</h2>
+                <p>Thanks — we've got your payment for <strong>${invoiceNumber}</strong>.</p>
+                <p>You're all set. Keep this email for your records.</p>
                 <hr style="margin: 30px 0; border: none; border-top: 1px solid #DAD8D9;">
-                <p style="color: #909090; font-size: 12px;">DevPay — Invoicing for freelancers</p>
+                <p style="color: #909090; font-size: 12px;">Sent via DevPay</p>
             </div>
         `,
     });
