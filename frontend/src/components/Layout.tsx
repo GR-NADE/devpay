@@ -7,14 +7,16 @@ const Layout = () => {
 
     return (
         <div className="flex min-h-screen bg-[#F0F0F0]">
-            <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white shadow-lg border border-[#DAD8D9] hover:bg-[#F0F0F0] transition duration-200"
-                aria-label="Toggle sidebar">
-                    <svg className="w-6 h-6 text-[#3A3A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d={sidebarOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-                    </svg>
-            </button>
+            <div className="lg:hidden fixed top-0 left-0 z-40 h-16 w-full bg-[#F0F0F0]">
+                <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="lg:hidden fixed top-4 left-1 z-50 p-2 rounded-lg hover:bg-[#E8E8E8] transition duration-200"
+                    aria-label="Toggle sidebar">
+                        <svg className="w-8 h-8 text-[#3A3A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d={sidebarOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+                        </svg>
+                </button>
+            </div>
 
             {sidebarOpen && (
                 <div className="lg:hidden fixed inset-0 bg-black/40 z-40" onClick={() => setSidebarOpen(false)} />
